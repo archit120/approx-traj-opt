@@ -7,6 +7,8 @@ import numpy as np
 
 from copy import deepcopy
 
+import envs.traj_reward
+
 class RaceTrajEnv(gym.Env):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
@@ -30,7 +32,8 @@ class RaceTrajEnv(gym.Env):
         self.gate_height = gate_height
         self.angle_dev = angle_dev
 
-        self.action_space = spaces.Box(-np.inf, np.inf, shape=(3,))
+# Action space first axis is for inplane movement and second for vertical 
+        self.action_space = spaces.Box(-np.inf, np.inf, shape=(2,))
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(look_behind+1+look_ahead, 3))
 
         self.seed()
@@ -42,19 +45,23 @@ class RaceTrajEnv(gym.Env):
         self.entire_traj_act = None
         self.steps_beyond_done = None
 
+        self.prev_reward = 0
+
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def step(self, action):
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
-
-        self.entire_traj_act[self.state_i] = action
         self.state_i += 1
         done = self.state_i==len(self.entire_traj)-2
+        self.modifs[self.state_i] = action
 
-        # TODO: Calculate reward by refitting trajectory that satisfies the snap requirement
-        reward = 1.0
+        gnew = envs.traj_reward.calc_bonus(self.entire_traj[1:], self.modifs[1:])
+        print(self.prev_reward, gnew)
+        reward = self.prev_reward - gnew
+        self.prev_reward = gnew
+        
         self.state = np.array(self.entire_traj[self.state_i-self.look_behind:self.state_i+self.look_ahead+1])
 
         return np.array(self.state), reward, done, {}
@@ -78,13 +85,15 @@ class RaceTrajEnv(gym.Env):
         for i in range(self.num_of_gates+1):
             self.entire_traj.append(self.get_next_pt(self.entire_traj[-1], self.entire_traj[-2]))
 
-        self.entire_traj_act = deepcopy(self.entire_traj)
+        self.entire_traj = np.array(self.entire_traj)
+
+        self.modifs = np.zeros((self.entire_traj.shape[0], 2))
 
         self.state_i = 2
         self.state = np.array(self.entire_traj[self.state_i-self.look_behind:self.state_i+self.look_ahead+1])
-
         self.steps_beyond_done = None
-        
+        self.prev_reward = envs.traj_reward.get_trajectory_snap(self.entire_traj[1:])
+
         return np.array(self.state)
 
     def render(self, mode='human'):
