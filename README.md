@@ -6,15 +6,19 @@ This project is an attempt to use policy gradient based methods to optimize a tr
 
 ### TODO
 
- - Decide with RL algorithm to use (A2C, TRPO, ACKTR, etc)
  - Implement Baseline
  - Implement learning algorithm
- - Decide NN architecture
  - Train and get results
  - Write report
 
-
+### Stretch
+ - Modify environment to do gradient descent based segment time optimization
+ 
 ### DONE
  - Create the environment 
    - Define Gym environment
    - Create reward function
+ - Decide with RL algorithm to use
+   - Decided to go with SAC
+ - Decide NN architecture
+   - Trivial architectures for now
