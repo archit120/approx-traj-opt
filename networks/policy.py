@@ -24,4 +24,5 @@ class PolicyNet(nn.Module):
             out = F.relu(out)
         out = self.out_fc(out)
 
-        return out
+        mean, logstd = out[:, :2], out[:, 2:]
+        return mean, logstd
