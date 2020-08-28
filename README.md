@@ -5,7 +5,6 @@ This project is an attempt to use policy gradient based methods to optimize a tr
 
 
 ### TODO
-
  - Implement Baseline
  - Implement learning algorithm
  - Train and get results
