@@ -5,12 +5,12 @@ This project is an attempt to use policy gradient based methods to optimize a tr
 
 
 ### TODO
- - Implement Baseline
- - Implement learning algorithm
+ - Implement TensorBoard
  - Train and get results
  - Write report
 
 ### Stretch
+
  - Modify environment to do gradient descent based segment time optimization
  
 ### DONE
@@ -21,3 +21,4 @@ This project is an attempt to use policy gradient based methods to optimize a tr
    - Decided to go with SAC
  - Decide NN architecture
    - Trivial architectures for now
+  - Implement learning algorithm

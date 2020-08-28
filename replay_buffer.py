@@ -21,7 +21,8 @@ class ReplayBuffer(object):
 
     def sample_transitions(self, batch_size):
         rand_indices = np.random.permutation(len(self.buffer))[:batch_size]
-        return self.buffer[rand_indices]
+        
+        return [self.buffer[i] for i in rand_indices]
     
     def sample_transition(self):
         rand_index = np.random.randint(0, len(self.buffer))
