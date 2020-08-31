@@ -74,6 +74,11 @@ class SoftActorCritic():
 
     def env_iter(self):
         state = self.env.reset()
+
+        native_reward = self.env.prev_reward
+
+        adj_reward = 0
+
         while True:
             action = self.get_actions(torch.from_numpy(state.reshape(1, -1)).float())
             action = action.detach().numpy()[0]
@@ -83,10 +88,14 @@ class SoftActorCritic():
             self.replay_buffer.add_transition(
                 (state, action, reward, state_next, done))
             
+            adj_reward += reward
+
             if done:
                 break
 
             state = state_next
+    
+        return native_reward, adj_reward
 
     def update_targets(self):
         for target_param, param in zip(self.target_1.parameters(), self.q_net_1.parameters()):
@@ -103,6 +112,17 @@ class SoftActorCritic():
 
         for target_param, param in zip(self.target_2.parameters(), self.q_net_2.parameters()):
             target_param.data.copy_(param)
+
+
+    def eval_env(self, num_runs = 2):
+        native_reward = 0
+        adj_reward = 0
+        for i in range(num_runs):
+            x,y = self.env_iter()
+            native_reward += x
+            adj_reward += y
+        
+        return native_reward, adj_reward
 
     def grad_iter(self):
         samples = self.replay_buffer.sample_transitions(self.batch_size)
@@ -171,3 +191,5 @@ class SoftActorCritic():
         self.alpha_optimizer.step()
 
         self.update_targets()
+
+        return q_loss_1.detach().numpy(), q_loss_2.detach().numpy(), policy_loss.detach().numpy(), alpha_loss.detach().numpy()

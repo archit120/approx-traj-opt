@@ -58,7 +58,6 @@ class RaceTrajEnv(gym.Env):
         self.modifs[self.state_i] = action
 
         gnew = envs.traj_reward.calc_bonus(self.entire_traj[1:], self.modifs[1:])
-        print(self.prev_reward, gnew)
         reward = self.prev_reward - gnew
         self.prev_reward = gnew
         

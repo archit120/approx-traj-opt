@@ -4,6 +4,8 @@ import numpy as np
 from traj_gen import poly_trajectory as pt
 
 import time
+import os
+import contextlib
 
 def get_knots(waypoints, scale = 10):
     total_time = 0
@@ -44,9 +46,14 @@ def get_trajectory_snap(waypoints, tdelta = 0.1, time_between_gates = 2):
 
     # solve
     pTraj.setDerivativeObj(objWeights)
-    pTraj.solve()
-    rng = np.linspace(0, len(waypoints)*time_between_gates, int((len(waypoints))*time_between_gates//tdelta))
-    snap = pTraj.eval(rng, 4)
+    with open(os.devnull, "w") as f, contextlib.redirect_stdout(f):
+        pTraj.solve()
+        rng = np.linspace(0, len(waypoints)*time_between_gates, int((len(waypoints))*time_between_gates//tdelta))
+        snap = pTraj.eval(rng, 4)
+    
+    # pTraj.showPath("hi")
+
+
     return np.linalg.norm(snap)**2
 
 def calc_bonus(waypoints, delta, gate_width = 1, gate_height = 0.5,):

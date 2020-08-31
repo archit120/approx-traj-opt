@@ -5,8 +5,8 @@ This project is an attempt to use policy gradient based methods to optimize a tr
 
 
 ### TODO
- - Implement TensorBoard
  - Train and get results
+ - Fix architecture
  - Write report
 
 ### Stretch
@@ -18,7 +18,8 @@ This project is an attempt to use policy gradient based methods to optimize a tr
    - Define Gym environment
    - Create reward function
  - Decide with RL algorithm to use
-   - Decided to go with SAC
+   - Decided to go with SAC with learnable temperature 
  - Decide NN architecture
    - Trivial architectures for now
   - Implement learning algorithm
+ - Implement TensorBoard
