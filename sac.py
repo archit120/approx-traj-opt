@@ -78,9 +78,11 @@ class SoftActorCritic():
         native_reward = self.env.prev_reward
 
         adj_reward = 0
-
+        self.policy_net.eval()
+        self.q_net_1.eval()
+        self.q_net_2.eval()
         while True:
-            action = self.get_actions(torch.from_numpy(state.reshape(1, -1)).float())
+            action = self.get_actions(torch.from_numpy(state.reshape(1, -1, 3)).float())
             action = action.detach().numpy()[0]
             state_next, reward, done, _ = self.env.step(
                 self.action_map(action))
@@ -125,6 +127,11 @@ class SoftActorCritic():
         return native_reward, adj_reward
 
     def grad_iter(self):
+
+        self.policy_net.train()
+        self.q_net_1.train()
+        self.q_net_2.train()
+
         samples = self.replay_buffer.sample_transitions(self.batch_size)
         s_t = np.zeros(
             (self.batch_size, self.look_ahead+1+self.look_behind, 3))

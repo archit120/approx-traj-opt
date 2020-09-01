@@ -4,12 +4,12 @@ from torch.utils.tensorboard import SummaryWriter
 
 # TODO: Implement training loop with logging support
 
-def train(iter_count = 100):
+def train(iter_count = 10000):
 
     writer = SummaryWriter()
     rl = sac.SoftActorCritic()
 
-    for n in range(100):
+    for n in range(iter_count):
         native_reward, adj_reward = rl.env_iter()
         writer.add_scalar('Eval/Original Reward', native_reward, n)
         writer.add_scalar('Eval/Additional Reward', adj_reward, n)
